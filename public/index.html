@@ -13,20 +13,21 @@
   <div class="container">
     <!-- Login form -->
     <div class="form-box login">
-      <form action="#">
+      <form id="loginForm">
         <h1>Login</h1>
+        <div id="loginError" style="display:none;color:#E74C5B;margin-bottom:15px;padding:10px;border-radius:5px;background:rgba(231,76,91,0.1)"></div>
         <div class="input-box">
-          <input type="text" placeholder="Username" required>
+          <input type="text" id="loginUsername" placeholder="Username" required>
           <i class="fa fa-user"></i>
         </div>
         <div class="input-box">
-          <input type="password" placeholder="Password" required>
+          <input type="password" id="loginPassword" placeholder="Password" required>
           <i class="fa-solid fa-lock"></i>
         </div>
         <div class="forgot-link">
           <a href="#">Forget Password?</a>
         </div>
-        <button type="submit" class="btn">Login</button>
+        <button type="submit" class="btn" id="loginBtn">Login</button>
         <p>or login with social platforms</p>
         <div class="social-icons">
           <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
@@ -48,7 +49,62 @@
   </div>
 
   <script>
-    // No toggle needed - register button navigates to register.html
+    const API_URL = 'http://localhost:4000';
+
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const loginError = document.getElementById('loginError');
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        loginError.style.display = 'none';
+        loginError.textContent = '';
+
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+
+        if (!username || !password) {
+          loginError.textContent = 'Username and password required';
+          loginError.style.display = 'block';
+          return;
+        }
+
+        try {
+          loginBtn.disabled = true;
+          loginBtn.textContent = 'Logging in...';
+
+          const response = await fetch(`${API_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            loginError.textContent = data.error || 'Login failed';
+            loginError.style.display = 'block';
+            loginBtn.disabled = false;
+            loginBtn.textContent = 'Login';
+            return;
+          }
+
+          // Store token
+          localStorage.setItem('authToken', data.token);
+          localStorage.setItem('user', JSON.stringify(data.user));
+
+          // Redirect to dashboard
+          window.location.href = '/dashboard.html';
+        } catch (err) {
+          console.error(err);
+          loginError.textContent = err.message || 'Network error';
+          loginError.style.display = 'block';
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Login';
+        }
+      });
+    }
   </script>
 </body>
 
