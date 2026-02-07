@@ -4,5 +4,15 @@
     "name": "Astro User",
     "email": "user@example.com",
     "avatarUrl": "/default-avatar.png"
+  },
+  "cbfe364e-8812-4d33-a88f-44240fe0e112": {
+    "id": "cbfe364e-8812-4d33-a88f-44240fe0e112",
+    "username": "biswajit",
+    "email": "biswajitbiswal1627@gmail.com",
+    "password": "c76271af54075500660cb397f10fdd50a6815a067bc1b8780bf7e8f06437e4d0",
+    "createdAt": "2026-02-07T19:17:47.038Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
   }
 }

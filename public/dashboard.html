@@ -269,6 +269,71 @@
       // TODO: open edit modal or navigate to edit page
       alert('Open Edit Profile (not implemented)');
     });
+
+    // Logout functionality
+    const logoutBtn = document.getElementById('logoutBtn');
+    if(logoutBtn) {
+      logoutBtn.addEventListener('click', function(){
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('user');
+        window.location.href = '/index.html';
+      });
+    }
+  })();
+
+  // Authentication and User Data
+  (async function(){
+    const API_URL = 'http://localhost:4000';
+    const token = localStorage.getItem('authToken');
+    const user = JSON.parse(localStorage.getItem('user') || 'null');
+
+    // Redirect to login if not authenticated
+    if(!token){
+      window.location.href = '/index.html';
+      return;
+    }
+
+    try {
+      // Fetch current user data
+      const response = await fetch(`${API_URL}/api/user/me`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+
+      if(!response.ok){
+        if(response.status === 401){
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('user');
+          window.location.href = '/index.html';
+        }
+        throw new Error('Failed to fetch user data');
+      }
+
+      const userData = await response.json();
+
+      // Update sidebar with user data
+      document.getElementById('sidebarName').textContent = userData.username || 'Guest';
+      document.getElementById('sidebarEmail').textContent = userData.email || 'user@example.com';
+
+      // Display watched asteroids count
+      const watchedCount = (userData.watchedAsteroids || []).length;
+      console.log(`User has ${watchedCount} watched asteroids`);
+
+      // Optional: Update avatar if available
+      if(userData.avatarUrl && userData.avatarUrl !== '/uploads/default-avatar.png'){
+        const avatarEl = document.getElementById('sidebarAvatar');
+        avatarEl.textContent = '';
+        const img = document.createElement('img');
+        img.src = userData.avatarUrl;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.borderRadius = '50%';
+        img.style.objectFit = 'cover';
+        avatarEl.appendChild(img);
+      }
+    } catch(err){
+      console.error('Error fetching user data:', err);
+    }
   })();
 </script>
 
