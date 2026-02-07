@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile - Cosmic Watch</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Profile Page Styles */
+    .profile-container {
+      max-width: 600px;
+      margin: 40px auto;
+      background: #0E1F3F;
+      padding: 40px;
+      border-radius: 16px;
+      border: 1px solid rgba(30, 210, 255, 0.1);
+    }
+
+    .profile-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .profile-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      margin: 0 auto 20px;
+      border: 3px solid #1ED2FF;
+      object-fit: cover;
+      background: #132456;
+    }
+
+    .profile-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .profile-email {
+      font-size: 14px;
+      color: #B8C1D9;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .btn-edit, .btn-logout {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-edit {
+      background: linear-gradient(135deg, #1ED2FF, #00B8E6);
+      color: #000;
+    }
+
+    .btn-edit:hover {
+      box-shadow: 0 4px 12px rgba(30, 210, 255, 0.3);
+    }
+
+    .btn-logout {
+      background: #5A1A25;
+      border: 1px solid #E74C5B;
+      color: #FF6B6B;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #0E1F3F;
+      border: 1px solid rgba(30, 210, 255, 0.1);
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-header {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1ED2FF;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: #B8C1D9;
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: #132456;
+      color: #ffffff;
+      font-size: 13px;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #1ED2FF;
+      box-shadow: 0 0 8px rgba(30, 210, 255, 0.2);
+    }
+
+    .form-input:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .avatar-preview-section {
+      margin-bottom: 20px;
+    }
+
+    .avatar-preview {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      margin-bottom: 12px;
+      border: 2px solid #1ED2FF;
+      object-fit: cover;
+      background: #132456;
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .file-input-label {
+      display: inline-block;
+      padding: 10px 16px;
+      background: linear-gradient(135deg, rgba(30, 210, 255, 0.2), rgba(0, 184, 230, 0.15));
+      border: 1px solid #1ED2FF;
+      border-radius: 8px;
+      color: #1ED2FF;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .file-input-label:hover {
+      background: linear-gradient(135deg, rgba(30, 210, 255, 0.3), rgba(0, 184, 230, 0.25));
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .file-error {
+      color: #E74C5B;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn-save, .btn-cancel {
+      flex: 1;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #1ED2FF, #00B8E6);
+      color: #000;
+    }
+
+    .btn-save:hover:not(:disabled) {
+      box-shadow: 0 4px 12px rgba(30, 210, 255, 0.3);
+    }
+
+    .btn-save:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #B8C1D9;
+    }
+
+    .btn-cancel:hover {
+      border-color: #B8C1D9;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+    }
+
+    .message.success {
+      background: rgba(46, 204, 113, 0.15);
+      color: #2ECC71;
+      border: 1px solid rgba(46, 204, 113, 0.3);
+    }
+
+    .message.error {
+      background: rgba(231, 76, 91, 0.15);
+      color: #E74C5B;
+      border: 1px solid rgba(231, 76, 91, 0.3);
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(30, 210, 255, 0.3);
+      border-top-color: #1ED2FF;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 6px;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <!-- NAVBAR -->
+  <header class="navbar">
+    <div class="brand">🔭 <span>Cosmic Watch</span></div>
+    <div class="nav-right">
+      <span class="nav-item">👤 Profile</span>
+      <button class="logout">⎋ Logout</button>
+    </div>
+  </header>
+
+  <!-- Profile Page -->
+  <main class="container">
+    <div class="profile-container">
+      <div class="profile-header">
+        <img id="profileAvatar" class="profile-avatar" src="/default-avatar.png" alt="Profile Avatar">
+        <div class="profile-name" id="profileName">Loading...</div>
+        <div class="profile-email" id="profileEmail">Loading...</div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="btn-edit" id="editBtn">✏ Edit Profile</button>
+        <button class="logout">⎋ Logout</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">Edit Profile</div>
+
+      <div class="avatar-preview-section">
+        <img id="previewAvatar" class="avatar-preview" src="/default-avatar.png" alt="Preview">
+        <div>
+          <div class="file-input-wrapper">
+            <label class="file-input-label">
+              📁 Choose Photo
+              <input type="file" id="avatarInput" accept="image/jpeg,image/png">
+            </label>
+          </div>
+          <div id="fileError" class="file-error"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="nameInput">Name</label>
+        <input type="text" id="nameInput" class="form-input" placeholder="Your name">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="emailInput">Email (Read-only)</label>
+        <input type="email" id="emailInput" class="form-input" disabled>
+      </div>
+
+      <div id="message"></div>
+
+      <div class="form-actions">
+        <button class="btn-save" id="saveBtn">💾 Save</button>
+        <button class="btn-cancel" id="cancelBtn">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="api.js"></script>
+  <script>
+    let currentUser = null;
+    let selectedFile = null;
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+
+    // DOM elements
+    const profileAvatar = document.getElementById('profileAvatar');
+    const profileName = document.getElementById('profileName');
+    const profileEmail = document.getElementById('profileEmail');
+    const editBtn = document.getElementById('editBtn');
+    const editModal = document.getElementById('editModal');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const avatarInput = document.getElementById('avatarInput');
+    const previewAvatar = document.getElementById('previewAvatar');
+    const nameInput = document.getElementById('nameInput');
+    const emailInput = document.getElementById('emailInput');
+    const fileError = document.getElementById('fileError');
+    const message = document.getElementById('message');
+    const logoutBtn = document.querySelector('.logout');
+
+    // Load profile on page load
+    async function loadProfile() {
+      try {
+        const user = await window.ProfileAPI.getCurrentUser();
+        currentUser = user;
+        updateProfileDisplay(user);
+      } catch (err) {
+        console.error('Error loading profile:', err);
+        showMessage('Failed to load profile', 'error');
+      }
+    }
+
+    function updateProfileDisplay(user) {
+      profileAvatar.src = user.avatarUrl || '/default-avatar.png';
+      profileName.textContent = user.name || 'User';
+      profileEmail.textContent = user.email || 'N/A';
+      previewAvatar.src = user.avatarUrl || '/default-avatar.png';
+    }
+
+    // Open edit modal
+    editBtn.addEventListener('click', () => {
+      if (currentUser) {
+        nameInput.value = currentUser.name || '';
+        emailInput.value = currentUser.email || '';
+        editModal.classList.add('show');
+        selectedFile = null;
+        fileError.textContent = '';
+      }
+    });
+
+    // Close edit modal
+    cancelBtn.addEventListener('click', () => {
+      editModal.classList.remove('show');
+      selectedFile = null;
+      fileError.textContent = '';
+      message.textContent = '';
+    });
+
+    // Handle file selection and preview
+    avatarInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      fileError.textContent = '';
+
+      if (!file) {
+        selectedFile = null;
+        return;
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        fileError.textContent = 'File size must be less than 2MB';
+        selectedFile = null;
+        avatarInput.value = '';
+        return;
+      }
+
+      // Validate file type
+      if (!['image/jpeg', 'image/png'].includes(file.type)) {
+        fileError.textContent = 'Only JPG and PNG files are allowed';
+        selectedFile = null;
+        avatarInput.value = '';
+        return;
+      }
+
+      selectedFile = file;
+
+      // Show instant preview
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        previewAvatar.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Save profile
+    saveBtn.addEventListener('click', async () => {
+      const newName = nameInput.value.trim();
+
+      if (!newName && !selectedFile) {
+        showMessage('Please change name or select a new photo', 'error');
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.innerHTML = '<span class="loading-spinner"></span>Saving...';
+      message.textContent = '';
+
+      try {
+        const updatedUser = await window.ProfileAPI.updateProfile(newName, selectedFile);
+        currentUser = updatedUser;
+        updateProfileDisplay(updatedUser);
+        showMessage('Profile updated successfully!', 'success');
+
+        setTimeout(() => {
+          editModal.classList.remove('show');
+          message.textContent = '';
+          selectedFile = null;
+          avatarInput.value = '';
+        }, 1500);
+      } catch (err) {
+        showMessage(`Error: ${err.message}`, 'error');
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '💾 Save';
+      }
+    });
+
+    function showMessage(text, type) {
+      message.textContent = text;
+      message.className = `message ${type}`;
+    }
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+      localStorage.removeItem('authToken');
+      window.location.href = '/dashboard.html';
+    });
+
+    // Load profile on page load
+    (async () => {
+      // Get demo token if not present
+      if (!localStorage.getItem('authToken')) {
+        try {
+          const { token } = await window.ProfileAPI.getDemoToken();
+          window.ProfileAPI.setToken(token);
+        } catch (err) {
+          console.error('Failed to get demo token:', err);
+        }
+      }
+
+      loadProfile();
+    })();
+  </script>
+</body>
+</html>

@@ -1,18 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interstellar Asteroid Tracker & Risk Analyser</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Cosmic Watch</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 </head>
+
 <body>
-  <div class="loginpage">
-    <input type="email" placeholder="Enter your email">
-    <input type="password" placeholder="Enter your password">
-    <button>LOGIN</button>
-    <button>SIGN UP</button>
+  <div class="container">
+    <!-- Login form -->
+    <div class="form-box login">
+      <form action="#">
+        <h1>Login</h1>
+        <div class="input-box">
+          <input type="text" placeholder="Username" required>
+          <i class="fa fa-user"></i>
+        </div>
+        <div class="input-box">
+          <input type="password" placeholder="Password" required>
+          <i class="fa-solid fa-lock"></i>
+        </div>
+        <div class="forgot-link">
+          <a href="#">Forget Password?</a>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <p>or login with social platforms</p>
+        <div class="social-icons">
+          <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#"><i class="fa-brands fa-google"></i></a>
+          <a href="#"><i class="fa-brands fa-twitter"></i></a>
+          <a href="#"><i class="fa-brands fa-github"></i></a>
+        </div>
+      </form>
+    </div>
+
+    <!-- Sign Up Section -->
+    <div class="toggle-box">
+      <div class="toggle-panel toggle-left">
+        <h1>Hello, Welcome!</h1>
+        <p>Don't have an account?</p>
+        <a href="register.html" class="btn register-btn" style="display:inline-block;width:auto;text-decoration:none;padding:8px 30px;">Create Account</a>
+      </div>
+    </div>
   </div>
-  
+
+  <script>
+    // No toggle needed - register button navigates to register.html
+  </script>
 </body>
+
 </html>

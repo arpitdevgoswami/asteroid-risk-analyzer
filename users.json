@@ -1,0 +1,8 @@
+{
+  "1": {
+    "id": "1",
+    "name": "Astro User",
+    "email": "user@example.com",
+    "avatarUrl": "/default-avatar.png"
+  }
+}
