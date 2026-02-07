@@ -12,18 +12,30 @@ const PORT = process.env.PORT || 4000;
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+<<<<<<< HEAD
 app.use(express.static(path.join(__dirname, 'public')));
+=======
+app.use('/', express.static(path.join(__dirname, 'public')));
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 const JWT_SECRET = process.env.JWT_SECRET || 'cosmic-watch-secret-key-2026';
 
+<<<<<<< HEAD
 // ===== FILE MANAGEMENT =====
+=======
+// Ensure users.json exists
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 function ensureUsersFile() {
   if (!fs.existsSync(USERS_FILE)) {
     fs.writeFileSync(USERS_FILE, JSON.stringify({}, null, 2), 'utf8');
   }
 }
 
+<<<<<<< HEAD
+=======
+// Read all users
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 function readUsers() {
   ensureUsersFile();
   try {
@@ -33,11 +45,19 @@ function readUsers() {
   }
 }
 
+<<<<<<< HEAD
+=======
+// Write users
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 function writeUsers(data) {
   ensureUsersFile();
   fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf8');
 }
 
+<<<<<<< HEAD
+=======
+// Simple hash function (for demo - use bcrypt in production)
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 function hashPassword(password) {
   return crypto
     .createHash('sha256')
@@ -45,7 +65,11 @@ function hashPassword(password) {
     .digest('hex');
 }
 
+<<<<<<< HEAD
 // ===== MIDDLEWARE =====
+=======
+// JWT Auth Middleware
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 function authMiddleware(req, res, next) {
   const auth = req.headers.authorization || '';
   if (!auth.startsWith('Bearer ')) {
@@ -61,7 +85,11 @@ function authMiddleware(req, res, next) {
   }
 }
 
+<<<<<<< HEAD
 // ===== MULTER SETUP =====
+=======
+// Multer setup for avatar uploads
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 const uploadsDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
@@ -78,7 +106,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
+<<<<<<< HEAD
   limits: { fileSize: 2 * 1024 * 1024 },
+=======
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
   fileFilter: (req, file, cb) => {
     const allowed = ['image/jpeg', 'image/png'];
     if (allowed.includes(file.mimetype)) cb(null, true);
@@ -86,11 +118,21 @@ const upload = multer({
   }
 });
 
+<<<<<<< HEAD
 // ===== AUTHENTICATION =====
+=======
+// ===== AUTHENTICATION ENDPOINTS =====
+
+// POST /api/auth/signup - Register new user
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.post('/api/auth/signup', (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
 
+<<<<<<< HEAD
+=======
+    // Validation
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
     if (!username || !email || !password || !confirmPassword) {
       return res.status(400).json({ error: 'All fields required' });
     }
@@ -105,6 +147,10 @@ app.post('/api/auth/signup', (req, res) => {
 
     const users = readUsers();
 
+<<<<<<< HEAD
+=======
+    // Check if user already exists
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
     const existingUser = Object.values(users).find(
       (u) => u.email === email || u.username === username
     );
@@ -113,6 +159,10 @@ app.post('/api/auth/signup', (req, res) => {
       return res.status(409).json({ error: 'User already exists' });
     }
 
+<<<<<<< HEAD
+=======
+    // Create new user
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
     const userId = crypto.randomUUID();
     const newUser = {
       id: userId,
@@ -128,6 +178,10 @@ app.post('/api/auth/signup', (req, res) => {
     users[userId] = newUser;
     writeUsers(users);
 
+<<<<<<< HEAD
+=======
+    // Generate token
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
     const token = jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '7d' });
 
     res.status(201).json({
@@ -146,6 +200,10 @@ app.post('/api/auth/signup', (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// POST /api/auth/login - Login user
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.post('/api/auth/login', (req, res) => {
   try {
     const { username, password } = req.body;
@@ -161,6 +219,10 @@ app.post('/api/auth/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
+<<<<<<< HEAD
+=======
+    // Generate token
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
 
     res.json({
@@ -180,6 +242,11 @@ app.post('/api/auth/login', (req, res) => {
 });
 
 // ===== USER ENDPOINTS =====
+<<<<<<< HEAD
+=======
+
+// GET /api/user/me - Get current user
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.get('/api/user/me', authMiddleware, (req, res) => {
   try {
     const users = readUsers();
@@ -204,6 +271,10 @@ app.get('/api/user/me', authMiddleware, (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// PUT /api/user/profile - Update user profile
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.put('/api/user/profile', authMiddleware, upload.single('avatar'), (req, res) => {
   try {
     const users = readUsers();
@@ -239,6 +310,10 @@ app.put('/api/user/profile', authMiddleware, upload.single('avatar'), (req, res)
   }
 });
 
+<<<<<<< HEAD
+=======
+// POST /api/user/watched-asteroid - Add watched asteroid
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.post('/api/user/watched-asteroid', authMiddleware, (req, res) => {
   try {
     const { asteroidId, asteroidName } = req.body;
@@ -275,6 +350,10 @@ app.post('/api/user/watched-asteroid', authMiddleware, (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// GET /api/user/watched-asteroids - Get watched asteroids
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.get('/api/user/watched-asteroids', authMiddleware, (req, res) => {
   try {
     const users = readUsers();
@@ -291,6 +370,10 @@ app.get('/api/user/watched-asteroids', authMiddleware, (req, res) => {
   }
 });
 
+<<<<<<< HEAD
+=======
+// Delete watched asteroid
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 app.delete('/api/user/watched-asteroid/:asteroidId', authMiddleware, (req, res) => {
   try {
     const { asteroidId } = req.params;
@@ -313,6 +396,7 @@ app.delete('/api/user/watched-asteroid/:asteroidId', authMiddleware, (req, res) 
   }
 });
 
+<<<<<<< HEAD
 // ===== HEALTH CHECK =====
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', server: 'Authentication API', timestamp: new Date().toISOString() });
@@ -323,4 +407,15 @@ app.listen(PORT, () => {
   console.log(`🚀 Authentication Server running on http://localhost:${PORT}`);
   console.log(`📊 Database: ${USERS_FILE}`);
   console.log(`🔐 Auth Endpoints: /api/auth/signup, /api/auth/login`);
+=======
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`📊 Database: ${USERS_FILE}`);
+>>>>>>> 7eade8480b0649622821a327b48873cd4e39d476
 });
