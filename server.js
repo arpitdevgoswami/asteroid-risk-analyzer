@@ -1,342 +1,395 @@
+// const express = require('express');
+// const fs = require('fs');
+// const path = require('path');
+// const multer = require('multer');
+// const jwt = require('jsonwebtoken');
+// const cors = require('cors');
+// const crypto = require('crypto');
+
+// const app = express();
+// const PORT = process.env.PORT || 4000;
+
+// app.use(cors());
+// app.use(express.json());
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// app.use('/', express.static(path.join(__dirname, 'public')));
+
+// const USERS_FILE = path.join(__dirname, 'users.json');
+// const JWT_SECRET = process.env.JWT_SECRET || 'cosmic-watch-secret-key-2026';
+
+// // Ensure users.json exists
+// function ensureUsersFile() {
+//   if (!fs.existsSync(USERS_FILE)) {
+//     fs.writeFileSync(USERS_FILE, JSON.stringify({}, null, 2), 'utf8');
+//   }
+// }
+
+// // Read all users
+// function readUsers() {
+//   ensureUsersFile();
+//   try {
+//     return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+//   } catch (err) {
+//     return {};
+//   }
+// }
+
+// // Write users
+// function writeUsers(data) {
+//   ensureUsersFile();
+//   fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf8');
+// }
+
+// // Simple hash function (for demo - use bcrypt in production)
+// function hashPassword(password) {
+//   return crypto
+//     .createHash('sha256')
+//     .update(password + JWT_SECRET)
+//     .digest('hex');
+// }
+
+// // JWT Auth Middleware
+// function authMiddleware(req, res, next) {
+//   const auth = req.headers.authorization || '';
+//   if (!auth.startsWith('Bearer ')) {
+//     return res.status(401).json({ error: 'Unauthorized' });
+//   }
+//   const token = auth.slice(7);
+//   try {
+//     const payload = jwt.verify(token, JWT_SECRET);
+//     req.user = payload;
+//     next();
+//   } catch (err) {
+//     return res.status(401).json({ error: 'Invalid token' });
+//   }
+// }
+
+// // Multer setup for avatar uploads
+// const uploadsDir = path.join(__dirname, 'uploads');
+// if (!fs.existsSync(uploadsDir)) {
+//   fs.mkdirSync(uploadsDir, { recursive: true });
+// }
+
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => cb(null, uploadsDir),
+//   filename: (req, file, cb) => {
+//     const ext = path.extname(file.originalname);
+//     const name = `avatar-${req.user ? req.user.id : 'anon'}-${Date.now()}${ext}`;
+//     cb(null, name);
+//   }
+// });
+
+// const upload = multer({
+//   storage,
+//   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
+//   fileFilter: (req, file, cb) => {
+//     const allowed = ['image/jpeg', 'image/png'];
+//     if (allowed.includes(file.mimetype)) cb(null, true);
+//     else cb(new Error('Only JPG/PNG allowed'));
+//   }
+// });
+
+// // ===== AUTHENTICATION ENDPOINTS =====
+
+// // POST /api/auth/signup - Register new user
+// app.post('/api/auth/signup', (req, res) => {
+//   try {
+//     const { username, email, password, confirmPassword } = req.body;
+
+//     // Validation
+//     if (!username || !email || !password || !confirmPassword) {
+//       return res.status(400).json({ error: 'All fields required' });
+//     }
+
+//     if (password !== confirmPassword) {
+//       return res.status(400).json({ error: 'Passwords do not match' });
+//     }
+
+//     if (password.length < 6) {
+//       return res.status(400).json({ error: 'Password must be at least 6 characters' });
+//     }
+
+//     const users = readUsers();
+
+//     // Check if user already exists
+//     const existingUser = Object.values(users).find(
+//       (u) => u.email === email || u.username === username
+//     );
+
+//     if (existingUser) {
+//       return res.status(409).json({ error: 'User already exists' });
+//     }
+
+//     // Create new user
+//     const userId = crypto.randomUUID();
+//     const newUser = {
+//       id: userId,
+//       username: String(username).slice(0, 50),
+//       email: String(email).slice(0, 100),
+//       password: hashPassword(password),
+//       createdAt: new Date().toISOString(),
+//       avatarUrl: '/uploads/default-avatar.png',
+//       watchedAsteroids: [],
+//       alerts: []
+//     };
+
+//     users[userId] = newUser;
+//     writeUsers(users);
+
+//     // Generate token
+//     const token = jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '7d' });
+
+//     res.status(201).json({
+//       message: 'User created successfully',
+//       token,
+//       user: {
+//         id: newUser.id,
+//         username: newUser.username,
+//         email: newUser.email,
+//         avatarUrl: newUser.avatarUrl
+//       }
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // POST /api/auth/login - Login user
+// app.post('/api/auth/login', (req, res) => {
+//   try {
+//     const { username, password } = req.body;
+
+//     if (!username || !password) {
+//       return res.status(400).json({ error: 'Username and password required' });
+//     }
+
+//     const users = readUsers();
+//     const user = Object.values(users).find((u) => u.username === username);
+
+//     if (!user || user.password !== hashPassword(password)) {
+//       return res.status(401).json({ error: 'Invalid username or password' });
+//     }
+
+//     // Generate token
+//     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
+
+//     res.json({
+//       message: 'Login successful',
+//       token,
+//       user: {
+//         id: user.id,
+//         username: user.username,
+//         email: user.email,
+//         avatarUrl: user.avatarUrl
+//       }
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // ===== USER ENDPOINTS =====
+
+// // GET /api/user/me - Get current user
+// app.get('/api/user/me', authMiddleware, (req, res) => {
+//   try {
+//     const users = readUsers();
+//     const user = users[req.user.id];
+
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     res.json({
+//       id: user.id,
+//       username: user.username,
+//       email: user.email,
+//       avatarUrl: user.avatarUrl,
+//       watchedAsteroids: user.watchedAsteroids || [],
+//       alerts: user.alerts || [],
+//       createdAt: user.createdAt
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // PUT /api/user/profile - Update user profile
+// app.put('/api/user/profile', authMiddleware, upload.single('avatar'), (req, res) => {
+//   try {
+//     const users = readUsers();
+//     const user = users[req.user.id];
+
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     const { username } = req.body;
+
+//     if (username) {
+//       user.username = String(username).slice(0, 50);
+//     }
+
+//     if (req.file) {
+//       user.avatarUrl = `/uploads/${req.file.filename}`;
+//     }
+
+//     users[req.user.id] = user;
+//     writeUsers(users);
+
+//     res.json({
+//       id: user.id,
+//       username: user.username,
+//       email: user.email,
+//       avatarUrl: user.avatarUrl,
+//       message: 'Profile updated successfully'
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // POST /api/user/watched-asteroid - Add watched asteroid
+// app.post('/api/user/watched-asteroid', authMiddleware, (req, res) => {
+//   try {
+//     const { asteroidId, asteroidName } = req.body;
+
+//     const users = readUsers();
+//     const user = users[req.user.id];
+
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     if (!user.watchedAsteroids) {
+//       user.watchedAsteroids = [];
+//     }
+
+//     const exists = user.watchedAsteroids.find((a) => a.id === asteroidId);
+//     if (exists) {
+//       return res.status(400).json({ error: 'Already watching this asteroid' });
+//     }
+
+//     user.watchedAsteroids.push({
+//       id: asteroidId,
+//       name: asteroidName,
+//       addedAt: new Date().toISOString()
+//     });
+
+//     users[req.user.id] = user;
+//     writeUsers(users);
+
+//     res.json({ message: 'Asteroid added to watchlist', watchedAsteroids: user.watchedAsteroids });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // GET /api/user/watched-asteroids - Get watched asteroids
+// app.get('/api/user/watched-asteroids', authMiddleware, (req, res) => {
+//   try {
+//     const users = readUsers();
+//     const user = users[req.user.id];
+
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     res.json(user.watchedAsteroids || []);
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // Delete watched asteroid
+// app.delete('/api/user/watched-asteroid/:asteroidId', authMiddleware, (req, res) => {
+//   try {
+//     const { asteroidId } = req.params;
+//     const users = readUsers();
+//     const user = users[req.user.id];
+
+//     if (!user) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     user.watchedAsteroids = (user.watchedAsteroids || []).filter((a) => a.id !== asteroidId);
+
+//     users[req.user.id] = user;
+//     writeUsers(users);
+
+//     res.json({ message: 'Asteroid removed from watchlist', watchedAsteroids: user.watchedAsteroids });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: err.message || 'Server error' });
+//   }
+// });
+
+// // Health check
+// app.get('/api/health', (req, res) => {
+//   res.json({ status: 'OK', timestamp: new Date().toISOString() });
+// });
+
+// // Start server
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server running on http://localhost:${PORT}`);
+//   console.log(`📊 Database: ${USERS_FILE}`);
+// });
 const express = require('express');
-const fs = require('fs');
+const axios = require('axios');
 const path = require('path');
-const multer = require('multer');
-const jwt = require('jsonwebtoken');
-const cors = require('cors');
-const crypto = require('crypto');
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 3000;
+const NASA_API_KEY = 'py68ASYJWRChDIR3wha2XEozyu3aqykOZjVxbS77';
 
-app.use(cors());
-app.use(express.json());
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/', express.static(path.join(__dirname, 'public')));
+// Serve static files (CSS, Images, Client-side JS)
+app.use(express.static(path.join(__dirname, 'public')));
 
-const USERS_FILE = path.join(__dirname, 'users.json');
-const JWT_SECRET = process.env.JWT_SECRET || 'cosmic-watch-secret-key-2026';
+/**
+ * Route to get Asteroid Data
+ * Fetches data based on the current date
+ */
+app.get('/api/asteroids', async (req, res) => {
+    try {
+        const today = new Date().toISOString().split('T')[0];
+        const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&end_date=${today}&api_key=${NASA_API_KEY}`;
+        
+        const response = await axios.get(url);
+        const data = response.data;
 
-// Ensure users.json exists
-function ensureUsersFile() {
-  if (!fs.existsSync(USERS_FILE)) {
-    fs.writeFileSync(USERS_FILE, JSON.stringify({}, null, 2), 'utf8');
-  }
-}
+        // Process the raw NASA data for your dashboard
+        const asteroidList = data.near_earth_objects[today] || [];
+        
+        const formattedData = asteroidList.map(neo => ({
+            name: neo.name,
+            velocity: parseFloat(neo.close_approach_data[0].relative_velocity.kilometers_per_second).toFixed(1),
+            distance: (parseFloat(neo.close_approach_data[0].miss_distance.kilometers) / 1000000).toFixed(1), // Millions of km
+            size: Math.round(neo.estimated_diameter.meters.estimated_diameter_max),
+            is_hazardous: neo.is_potentially_hazardous_asteroid,
+            approach_date: neo.close_approach_data[0].close_approach_date_full
+        }));
 
-// Read all users
-function readUsers() {
-  ensureUsersFile();
-  try {
-    return JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
-  } catch (err) {
-    return {};
-  }
-}
-
-// Write users
-function writeUsers(data) {
-  ensureUsersFile();
-  fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf8');
-}
-
-// Simple hash function (for demo - use bcrypt in production)
-function hashPassword(password) {
-  return crypto
-    .createHash('sha256')
-    .update(password + JWT_SECRET)
-    .digest('hex');
-}
-
-// JWT Auth Middleware
-function authMiddleware(req, res, next) {
-  const auth = req.headers.authorization || '';
-  if (!auth.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Unauthorized' });
-  }
-  const token = auth.slice(7);
-  try {
-    const payload = jwt.verify(token, JWT_SECRET);
-    req.user = payload;
-    next();
-  } catch (err) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-}
-
-// Multer setup for avatar uploads
-const uploadsDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = `avatar-${req.user ? req.user.id : 'anon'}-${Date.now()}${ext}`;
-    cb(null, name);
-  }
+        res.json({
+            count: data.element_count,
+            asteroids: formattedData
+        });
+    } catch (error) {
+        console.error('Error fetching NASA data:', error.message);
+        res.status(500).json({ error: 'Failed to fetch cosmic data' });
+    }
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB
-  fileFilter: (req, file, cb) => {
-    const allowed = ['image/jpeg', 'image/png'];
-    if (allowed.includes(file.mimetype)) cb(null, true);
-    else cb(new Error('Only JPG/PNG allowed'));
-  }
+// Main Route
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
-// ===== AUTHENTICATION ENDPOINTS =====
-
-// POST /api/auth/signup - Register new user
-app.post('/api/auth/signup', (req, res) => {
-  try {
-    const { username, email, password, confirmPassword } = req.body;
-
-    // Validation
-    if (!username || !email || !password || !confirmPassword) {
-      return res.status(400).json({ error: 'All fields required' });
-    }
-
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
-    }
-
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
-    }
-
-    const users = readUsers();
-
-    // Check if user already exists
-    const existingUser = Object.values(users).find(
-      (u) => u.email === email || u.username === username
-    );
-
-    if (existingUser) {
-      return res.status(409).json({ error: 'User already exists' });
-    }
-
-    // Create new user
-    const userId = crypto.randomUUID();
-    const newUser = {
-      id: userId,
-      username: String(username).slice(0, 50),
-      email: String(email).slice(0, 100),
-      password: hashPassword(password),
-      createdAt: new Date().toISOString(),
-      avatarUrl: '/uploads/default-avatar.png',
-      watchedAsteroids: [],
-      alerts: []
-    };
-
-    users[userId] = newUser;
-    writeUsers(users);
-
-    // Generate token
-    const token = jwt.sign({ id: userId }, JWT_SECRET, { expiresIn: '7d' });
-
-    res.status(201).json({
-      message: 'User created successfully',
-      token,
-      user: {
-        id: newUser.id,
-        username: newUser.username,
-        email: newUser.email,
-        avatarUrl: newUser.avatarUrl
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// POST /api/auth/login - Login user
-app.post('/api/auth/login', (req, res) => {
-  try {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password required' });
-    }
-
-    const users = readUsers();
-    const user = Object.values(users).find((u) => u.username === username);
-
-    if (!user || user.password !== hashPassword(password)) {
-      return res.status(401).json({ error: 'Invalid username or password' });
-    }
-
-    // Generate token
-    const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        avatarUrl: user.avatarUrl
-      }
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// ===== USER ENDPOINTS =====
-
-// GET /api/user/me - Get current user
-app.get('/api/user/me', authMiddleware, (req, res) => {
-  try {
-    const users = readUsers();
-    const user = users[req.user.id];
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      watchedAsteroids: user.watchedAsteroids || [],
-      alerts: user.alerts || [],
-      createdAt: user.createdAt
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// PUT /api/user/profile - Update user profile
-app.put('/api/user/profile', authMiddleware, upload.single('avatar'), (req, res) => {
-  try {
-    const users = readUsers();
-    const user = users[req.user.id];
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    const { username } = req.body;
-
-    if (username) {
-      user.username = String(username).slice(0, 50);
-    }
-
-    if (req.file) {
-      user.avatarUrl = `/uploads/${req.file.filename}`;
-    }
-
-    users[req.user.id] = user;
-    writeUsers(users);
-
-    res.json({
-      id: user.id,
-      username: user.username,
-      email: user.email,
-      avatarUrl: user.avatarUrl,
-      message: 'Profile updated successfully'
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// POST /api/user/watched-asteroid - Add watched asteroid
-app.post('/api/user/watched-asteroid', authMiddleware, (req, res) => {
-  try {
-    const { asteroidId, asteroidName } = req.body;
-
-    const users = readUsers();
-    const user = users[req.user.id];
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    if (!user.watchedAsteroids) {
-      user.watchedAsteroids = [];
-    }
-
-    const exists = user.watchedAsteroids.find((a) => a.id === asteroidId);
-    if (exists) {
-      return res.status(400).json({ error: 'Already watching this asteroid' });
-    }
-
-    user.watchedAsteroids.push({
-      id: asteroidId,
-      name: asteroidName,
-      addedAt: new Date().toISOString()
-    });
-
-    users[req.user.id] = user;
-    writeUsers(users);
-
-    res.json({ message: 'Asteroid added to watchlist', watchedAsteroids: user.watchedAsteroids });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// GET /api/user/watched-asteroids - Get watched asteroids
-app.get('/api/user/watched-asteroids', authMiddleware, (req, res) => {
-  try {
-    const users = readUsers();
-    const user = users[req.user.id];
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    res.json(user.watchedAsteroids || []);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// Delete watched asteroid
-app.delete('/api/user/watched-asteroid/:asteroidId', authMiddleware, (req, res) => {
-  try {
-    const { asteroidId } = req.params;
-    const users = readUsers();
-    const user = users[req.user.id];
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    user.watchedAsteroids = (user.watchedAsteroids || []).filter((a) => a.id !== asteroidId);
-
-    users[req.user.id] = user;
-    writeUsers(users);
-
-    res.json({ message: 'Asteroid removed from watchlist', watchedAsteroids: user.watchedAsteroids });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message || 'Server error' });
-  }
-});
-
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', timestamp: new Date().toISOString() });
-});
-
-// Start server
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📊 Database: ${USERS_FILE}`);
+    console.log(`🚀 Cosmic Watch running at http://localhost:${PORT}`);
 });
