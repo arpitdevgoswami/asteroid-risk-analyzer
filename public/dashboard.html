@@ -77,22 +77,22 @@
   <section class="stats">
     <div class="stat-card blue">
       <p>Total Asteroids Today</p>
-      <h2>8</h2>
+      <h2 id="statTotal">—</h2>
     </div>
 
     <div class="stat-card red">
       <p>High-Risk Asteroids</p>
-      <h2>2</h2>
+      <h2 id="statHigh">—</h2>
     </div>
 
     <div class="stat-card orange">
       <p>Closest Distance</p>
-      <h2>3.8M km</h2>
+      <h2 id="statClosest">—</h2>
     </div>
 
     <div class="stat-card green">
       <p>Active Alerts</p>
-      <h2>4</h2>
+      <h2 id="statAlerts">—</h2>
     </div>
   </section>
 
@@ -115,31 +115,8 @@
             <th>Approach</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <td>2024 XR7</td>
-            <td>18.5 km/s</td>
-            <td>4.2M km</td>
-            <td>340m</td>
-            <td class="high">HIGH</td>
-            <td>Feb 8, 2026</td>
-          </tr>
-          <tr>
-            <td>2023 YT2</td>
-            <td>12.3 km/s</td>
-            <td>8.7M km</td>
-            <td>180m</td>
-            <td class="medium">MEDIUM</td>
-            <td>Feb 9, 2026</td>
-          </tr>
-          <tr>
-            <td>2025 AB9</td>
-            <td>8.9 km/s</td>
-            <td>15.3M km</td>
-            <td>95m</td>
-            <td class="low">LOW</td>
-            <td>Feb 10, 2026</td>
-          </tr>
+        <tbody id="asteroidTableBody">
+          <!-- asteroid rows inserted here -->
         </tbody>
       </table>
     </div>
@@ -334,6 +311,68 @@
     } catch(err){
       console.error('Error fetching user data:', err);
     }
+
+    // Fetch and render asteroid data from the data server (same origin)
+    async function fetchAndRenderAsteroids(){
+      try{
+        const res = await fetch('/api/asteroids');
+        if(!res.ok) throw new Error('Failed to fetch asteroid data');
+        const data = await res.json();
+
+        const asteroids = data.asteroids || [];
+
+        // Update stat cards
+        document.getElementById('statTotal').textContent = data.count || asteroids.length || 0;
+
+        const highCount = asteroids.filter(a => a.is_hazardous).length;
+        document.getElementById('statHigh').textContent = highCount;
+
+        // Closest distance (in millions km)
+        const distances = asteroids.map(a => parseFloat(a.distance));
+        const closest = distances.length ? Math.min(...distances) : 0;
+        document.getElementById('statClosest').textContent = closest ? `${closest}M km` : '—';
+
+        // Simple alert count: hazardous asteroids
+        document.getElementById('statAlerts').textContent = highCount;
+
+        // Populate table
+        const tbody = document.getElementById('asteroidTableBody');
+        tbody.innerHTML = '';
+
+        asteroids.forEach(a => {
+          const tr = document.createElement('tr');
+
+          const riskClass = a.is_hazardous ? 'high' : 'low';
+
+          tr.innerHTML = `
+            <td>${escapeHtml(a.name)}</td>
+            <td>${escapeHtml(a.velocity)} km/s</td>
+            <td>${escapeHtml(a.distance)}M km</td>
+            <td>${escapeHtml(a.size)} m</td>
+            <td class="${riskClass}">${a.is_hazardous ? 'HIGH' : 'LOW'}</td>
+            <td>${escapeHtml(a.approach_date)}</td>
+          `;
+
+          tbody.appendChild(tr);
+        });
+      }catch(e){
+        console.error('Error loading asteroids:', e);
+      }
+    }
+
+    // Small helper to avoid HTML injection
+    function escapeHtml(s){
+      if(s === null || s === undefined) return '';
+      return String(s).replace(/[&<>"']/g, function(c){
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c];
+      });
+    }
+
+    // Initial load
+    fetchAndRenderAsteroids();
+
+    // Refresh every 60 seconds for near-real-time updates
+    setInterval(fetchAndRenderAsteroids, 60 * 1000);
   })();
 </script>
 

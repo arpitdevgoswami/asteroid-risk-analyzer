@@ -24,5 +24,25 @@
     "avatarUrl": "/uploads/default-avatar.png",
     "watchedAsteroids": [],
     "alerts": []
+  },
+  "e53944dd-5589-4e61-8fc9-3af9b0a593e7": {
+    "id": "e53944dd-5589-4e61-8fc9-3af9b0a593e7",
+    "username": "testuser2",
+    "email": "test2@cosmic.com",
+    "password": "e72e131b41e97c99098d97e951d235540b025cfc99e159830cb0b2deaf33865a",
+    "createdAt": "2026-02-07T20:02:23.722Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "02cd87b0-f5a5-4b51-b558-36054738159f": {
+    "id": "02cd87b0-f5a5-4b51-b558-36054738159f",
+    "username": "sambit",
+    "email": "bariksambitkumar3@gmail.com",
+    "password": "70053faa9441605ad366cab975f9fc0f3ce00a987032af3e957add752e1d4f67",
+    "createdAt": "2026-02-07T20:29:30.768Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
   }
 }
