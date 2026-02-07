@@ -35,6 +35,18 @@ body {
 .nav-item {
   color: #B8C1D9;
   font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  padding: 4px 0;
+}
+
+.nav-item:hover {
+  color: #1ED2FF;
+  transform: translateY(-3px);
+  text-shadow: 0 0 15px rgba(30, 210, 255, 0.8), 0 0 30px rgba(30, 210, 255, 0.5);
+  filter: brightness(1.3);
+  transition: all 0.3s ease;
 }
 
 .logout {
@@ -44,6 +56,21 @@ body {
   padding: 6px 14px;
   border-radius: 10px;
   cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.logout:hover {
+  background: #E74C5B;
+  color: #fff;
+  transform: scale(1.08);
+  box-shadow: 0 8px 30px rgba(231, 76, 91, 0.6), 0 0 40px rgba(231, 76, 91, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  filter: brightness(1.2);
+}
+
+.logout:active {
+  transform: scale(0.98);
 }
 
 /* LAYOUT */
@@ -61,6 +88,27 @@ body {
 .stat-card {
   padding: 20px;
   border-radius: 16px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.stat-card:hover {
+  transform: translateY(-12px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px rgba(30, 210, 255, 0.3);
+  filter: brightness(1.15);
+  border: 1px solid rgba(30, 210, 255, 0.4);
+}
+
+.stat-card:hover p {
+  color: #1ED2FF;
+  text-shadow: 0 0 10px rgba(30, 210, 255, 0.6);
+}
+
+.stat-card:hover h2 {
+  color: #fff;
+  text-shadow: 0 0 20px rgba(30, 210, 255, 0.5);
 }
 
 .stat-card p {
@@ -99,9 +147,21 @@ body {
   margin-bottom: 16px;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
+table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+table tbody tr:hover {
+  background: rgba(30, 210, 255, 0.12);
+  box-shadow: inset 0 0 20px rgba(30, 210, 255, 0.15), 0 0 20px rgba(30, 210, 255, 0.1);
+  transform: scaleX(1.02);
+  filter: brightness(1.1);
+}
+
+table tbody tr:hover td {
+  color: #1ED2FF;
+  text-shadow: 0 0 8px rgba(30, 210, 255, 0.4);
 }
 
 th, td {
@@ -135,19 +195,35 @@ td {
   padding: 14px;
   border-radius: 12px;
   margin-top: 14px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  border-left: 4px solid transparent;
 }
 
-.alert span {
-  display: block;
-  font-size: 12px;
-  color: #B8C1D9;
-  margin-top: 6px;
+.alert:hover {
+  transform: translateX(8px);
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5), 0 0 25px rgba(30, 210, 255, 0.2);
+  background: rgba(42, 22, 51, 1);
+  filter: brightness(1.15);
 }
 
 .alert.high {
   border-left: 4px solid #E74C5B;
 }
 
+.alert.high:hover {
+  box-shadow: 0 12px 35px rgba(231, 76, 91, 0.4), 0 0 30px rgba(231, 76, 91, 0.3);
+  border-left-width: 8px;
+  filter: brightness(1.2);
+}
+
 .alert.medium {
   border-left: 4px solid #F1C40F;
+}
+
+.alert.medium:hover {
+  box-shadow: 0 12px 35px rgba(241, 196, 15, 0.4), 0 0 30px rgba(241, 196, 15, 0.3);
+  border-left-width: 8px;
+  filter: brightness(1.2);
 }

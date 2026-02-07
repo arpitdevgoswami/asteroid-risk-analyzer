@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account - Cosmic Watch</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <style>
+    body {
+      background: linear-gradient(90deg, #e2e2e2, #c9d6ff);
+    }
+
+    .register-container {
+      position: relative;
+      width: 500px;
+      background: #fff;
+      margin: 20px auto;
+      padding: 50px 40px;
+      border-radius: 30px;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+      animation: slideInUp 0.5s ease;
+    }
+
+    @keyframes slideInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .register-container h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #333;
+      background: linear-gradient(135deg, #7494ec, #5a7dd6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .register-container p {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 30px;
+    }
+
+    .register-form {
+      width: 100%;
+    }
+
+    .input-box {
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 13px 50px 13px 20px;
+      background: #eee;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      outline: none;
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .input-box input:hover {
+      background: #f5f5f5;
+      border-color: #7494ec;
+      box-shadow: 0 0 20px rgba(116, 148, 236, 0.6), 0 0 40px rgba(116, 148, 236, 0.3), inset 0 0 10px rgba(116, 148, 236, 0.1);
+      filter: brightness(1.05);
+    }
+
+    .input-box input:focus {
+      background: #fff;
+      border-color: #7494ec;
+      box-shadow: 0 0 30px rgba(116, 148, 236, 0.8), 0 0 60px rgba(116, 148, 236, 0.4), inset 0 0 15px rgba(116, 148, 236, 0.15);
+      filter: brightness(1.1);
+    }
+
+    .input-box input::placeholder {
+      color: #888;
+      font-weight: 400;
+    }
+
+    .input-box i {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 20px;
+      color: #7494ec;
+      transition: all 0.3s ease;
+    }
+
+    .input-box input:hover ~ i,
+    .input-box input:focus ~ i {
+      color: #5a7dd6;
+      filter: brightness(1.2);
+    }
+
+    .register-btn {
+      width: 100%;
+      height: 48px;
+      background: linear-gradient(135deg, #7494ec, #5a7dd6);
+      border-radius: 8px;
+      border: 2px solid #7494ec;
+      cursor: pointer;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .register-btn:hover {
+      background: linear-gradient(135deg, #5a7dd6, #465ba3);
+      transform: translateY(-4px);
+      box-shadow: 0 15px 40px rgba(116, 148, 236, 0.7), 0 0 30px rgba(116, 148, 236, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      filter: brightness(1.15);
+    }
+
+    .register-btn:active {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(116, 148, 236, 0.5);
+    }
+
+    .social-info {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .social-icons {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      border: 2px solid #eee;
+      border-radius: 50%;
+      font-size: 20px;
+      color: #333;
+      transition: all 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      border-color: #7494ec;
+      color: #7494ec;
+      transform: scale(1.2) rotate(8deg);
+      box-shadow: 0 8px 25px rgba(116, 148, 236, 0.6), 0 0 20px rgba(116, 148, 236, 0.4);
+      filter: brightness(1.2);
+    }
+
+    .social-icons a:active {
+      transform: scale(0.95);
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: #888;
+    }
+
+    .login-link a {
+      color: #7494ec;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .login-link a:hover {
+      color: #5a7dd6;
+      text-decoration: underline;
+      text-shadow: 0 0 12px rgba(116, 148, 236, 0.6);
+      filter: brightness(1.2);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="register-container">
+    <h1>Create Account</h1>
+    <p>Join Cosmic Watch and start monitoring asteroids</p>
+
+    <form class="register-form" action="#" method="POST">
+      <div class="input-box">
+        <input type="text" placeholder="Username" required>
+        <i class="fa fa-user"></i>
+      </div>
+
+      <div class="input-box">
+        <input type="email" placeholder="Email Address" required>
+        <i class="fa-solid fa-envelope"></i>
+      </div>
+
+      <div class="input-box">
+        <input type="password" placeholder="Password" required>
+        <i class="fa-solid fa-lock"></i>
+      </div>
+
+      <div class="input-box">
+        <input type="password" placeholder="Confirm Password" required>
+        <i class="fa-solid fa-lock"></i>
+      </div>
+
+      <button type="submit" class="register-btn">Create Account</button>
+    </form>
+
+    <div class="social-info">or register with social platforms</div>
+    <div class="social-icons">
+      <a href="#" title="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="#" title="Google"><i class="fa-brands fa-google"></i></a>
+      <a href="#" title="Twitter"><i class="fa-brands fa-twitter"></i></a>
+      <a href="#" title="Github"><i class="fa-brands fa-github"></i></a>
+    </div>
+
+    <div class="login-link">
+      Already have an account? <a href="index.html">Login here</a>
+    </div>
+  </div>
+
+  <script>
+    // Form submission handler
+    const registerForm = document.querySelector('.register-form');
+    if (registerForm) {
+      registerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        alert('Account created successfully! Redirecting to login...');
+        window.location.href = 'index.html';
+      });
+    }
+  </script>
+</body>
+
+</html>
