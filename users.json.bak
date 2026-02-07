@@ -1,0 +1,58 @@
+{
+  "1": {
+    "id": "1",
+    "name": "Astro User",
+    "email": "user@example.com",
+    "avatarUrl": "/default-avatar.png"
+  },
+  "cbfe364e-8812-4d33-a88f-44240fe0e112": {
+    "id": "cbfe364e-8812-4d33-a88f-44240fe0e112",
+    "username": "biswajit",
+    "email": "biswajitbiswal1627@gmail.com",
+    "password": "c76271af54075500660cb397f10fdd50a6815a067bc1b8780bf7e8f06437e4d0",
+    "createdAt": "2026-02-07T19:17:47.038Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "2e70bf36-cea7-4988-b729-242a12d2d8d2": {
+    "id": "2e70bf36-cea7-4988-b729-242a12d2d8d2",
+    "username": "testuser",
+    "email": "test@cosmic.com",
+    "password": "89f2afd9861074a781303cc952d660d4f1bd4dbb1e26ec12db4728112d9655cb",
+    "createdAt": "2026-02-07T19:31:35.447Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "e53944dd-5589-4e61-8fc9-3af9b0a593e7": {
+    "id": "e53944dd-5589-4e61-8fc9-3af9b0a593e7",
+    "username": "testuser2",
+    "email": "test2@cosmic.com",
+    "password": "e72e131b41e97c99098d97e951d235540b025cfc99e159830cb0b2deaf33865a",
+    "createdAt": "2026-02-07T20:02:23.722Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "02cd87b0-f5a5-4b51-b558-36054738159f": {
+    "id": "02cd87b0-f5a5-4b51-b558-36054738159f",
+    "username": "sambit",
+    "email": "bariksambitkumar3@gmail.com",
+    "password": "70053faa9441605ad366cab975f9fc0f3ce00a987032af3e957add752e1d4f67",
+    "createdAt": "2026-02-07T20:29:30.768Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "bb733b6b-8127-496c-b7f7-eb4acb4cec3e": {
+    "id": "bb733b6b-8127-496c-b7f7-eb4acb4cec3e",
+    "username": "cli_test_user_1",
+    "email": "cli_test@example.com",
+    "password": "edf9a2b715bb3d52e30f4ec5d74d258d5fe7277d72c703c7622effa92543c734",
+    "createdAt": "2026-02-07T22:50:41.224Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  }
+}

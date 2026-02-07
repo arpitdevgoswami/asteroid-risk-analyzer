@@ -8,8 +8,7 @@
     "start": "node server1.js",
     "start:auth": "node server.js",
     "start:api": "node server1.js",
-    "seed": "node scripts/seed.js"
-    ,
+    "seed": "node scripts/seed.js",
     "dev": "node scripts/dev.js"
   },
   "repository": {
@@ -29,6 +28,7 @@
     "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
+    "puppeteer": "^24.37.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

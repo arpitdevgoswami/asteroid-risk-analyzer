@@ -19,7 +19,27 @@ function readJson(filePath, defaultValue) {
 }
 
 function writeJson(filePath, data) {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+    const tmp = `${filePath}.tmp`;
+    try {
+        const fd = fs.openSync(tmp, 'w');
+        const payload = JSON.stringify(data, null, 2);
+        fs.writeSync(fd, payload, 0, 'utf8');
+        fs.fsyncSync(fd);
+        fs.closeSync(fd);
+
+        // create a backup of the previous file if it exists
+        try {
+            if (fs.existsSync(filePath)) fs.copyFileSync(filePath, `${filePath}.bak`);
+        } catch (e) {
+            // non-fatal, continue
+        }
+
+        fs.renameSync(tmp, filePath);
+    } catch (e) {
+        // best-effort fallback
+        try { fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8'); } catch (err) {}
+        try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch (err) {}
+    }
 }
 
 function initializeDatabase() {

@@ -35,7 +35,21 @@ function readUsers() {
 
 function writeUsers(data) {
   ensureUsersFile();
-  fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf8');
+  const tmp = `${USERS_FILE}.tmp`;
+  try {
+    const fd = fs.openSync(tmp, 'w');
+    const payload = JSON.stringify(data, null, 2);
+    fs.writeSync(fd, payload, 0, 'utf8');
+    fs.fsyncSync(fd);
+    fs.closeSync(fd);
+    try {
+      if (fs.existsSync(USERS_FILE)) fs.copyFileSync(USERS_FILE, `${USERS_FILE}.bak`);
+    } catch (e) {}
+    fs.renameSync(tmp, USERS_FILE);
+  } catch (e) {
+    try { fs.writeFileSync(USERS_FILE, JSON.stringify(data, null, 2), 'utf8'); } catch (err) {}
+    try { if (fs.existsSync(tmp)) fs.unlinkSync(tmp); } catch (err) {}
+  }
 }
 
 // Simple hash function (for demo - use bcrypt in production)

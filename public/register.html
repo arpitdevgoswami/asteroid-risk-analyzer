@@ -243,9 +243,15 @@
   </div>
 
   <script>
-    // Resolve auth server base by trying common auth ports on this host
+    // Resolve auth server base: prefer same-origin proxy at /api/auth, then try known ports
     async function resolveAuthApi(){
       if(window._AUTH_BASE) return window._AUTH_BASE;
+      // try same-origin proxy endpoint first
+      try{
+        const res = await fetch(`/api/auth/health`, { method: 'GET', mode: 'cors' });
+        if(res.ok){ window._AUTH_BASE = ''; return ''; }
+      }catch(e){ /* ignore */ }
+
       const ports = [4000, 4001, 5000];
       for(const p of ports){
         const url = `${window.location.protocol}//${window.location.hostname}:${p}`;

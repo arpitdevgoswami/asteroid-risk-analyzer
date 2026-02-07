@@ -44,5 +44,25 @@
     "avatarUrl": "/uploads/default-avatar.png",
     "watchedAsteroids": [],
     "alerts": []
+  },
+  "bb733b6b-8127-496c-b7f7-eb4acb4cec3e": {
+    "id": "bb733b6b-8127-496c-b7f7-eb4acb4cec3e",
+    "username": "cli_test_user_1",
+    "email": "cli_test@example.com",
+    "password": "edf9a2b715bb3d52e30f4ec5d74d258d5fe7277d72c703c7622effa92543c734",
+    "createdAt": "2026-02-07T22:50:41.224Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "ad866a28-d6ac-4737-920f-f9f05acec704": {
+    "id": "ad866a28-d6ac-4737-920f-f9f05acec704",
+    "username": "proxy_test_user",
+    "email": "proxy_test@example.com",
+    "password": "edf9a2b715bb3d52e30f4ec5d74d258d5fe7277d72c703c7622effa92543c734",
+    "createdAt": "2026-02-07T22:55:14.457Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
   }
 }

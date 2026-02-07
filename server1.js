@@ -12,6 +12,41 @@ const NASA_API_KEY = 'dA7AirbtYyrUyiW1sxLTIrw7qfj5meQhef73MtQ9';
 app.use(cors());
 app.use(express.json());
 
+// Lightweight proxy for auth API so the frontend can call same-origin /api/auth/*
+app.use('/api/auth', async (req, res) => {
+    // Map health check to auth server's /api/health endpoint
+    let target = `http://localhost:4000${req.originalUrl}`;
+    if (req.originalUrl && req.originalUrl.endsWith('/health')) {
+        target = 'http://localhost:4000/api/health';
+    }
+    try {
+        const axiosConfig = {
+            method: req.method,
+            url: target,
+            headers: Object.assign({}, req.headers, { host: 'localhost:4000' }),
+            data: req.body,
+            params: req.query,
+            timeout: 15000,
+            validateStatus: () => true,
+            responseType: 'arraybuffer'
+        };
+
+        const response = await axios(axiosConfig);
+
+        // Forward response headers (skip hop-by-hop headers)
+        const skip = ['transfer-encoding', 'connection', 'keep-alive', 'content-encoding'];
+        for (const k of Object.keys(response.headers || {})) {
+            if (skip.includes(k.toLowerCase())) continue;
+            res.setHeader(k, response.headers[k]);
+        }
+
+        res.status(response.status).send(Buffer.from(response.data));
+    } catch (err) {
+        console.error('Auth proxy error:', err.message || err);
+        res.status(502).json({ error: 'Auth server unreachable (proxy)' });
+    }
+});
+
 // Serve static files (CSS, Images, Client-side JS)
 app.use(express.static(path.join(__dirname, 'public')));
 
