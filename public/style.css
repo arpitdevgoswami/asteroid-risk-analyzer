@@ -1,0 +1,153 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", sans-serif;
+}
+
+body {
+  background: radial-gradient(circle at top, #13245A, #060C1F);
+  color: #ffffff;
+}
+
+/* NAVBAR */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: linear-gradient(90deg, #060C1F, #0B1633, #13245A);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.brand {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1ED2FF;
+}
+
+.nav-right {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+}
+
+.nav-item {
+  color: #B8C1D9;
+  font-size: 14px;
+}
+
+.logout {
+  background: #5A1A25;
+  border: 1px solid #E74C5B;
+  color: #FF6B6B;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* LAYOUT */
+.container {
+  padding: 30px;
+}
+
+/* STATS */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.stat-card {
+  padding: 20px;
+  border-radius: 16px;
+}
+
+.stat-card p {
+  color: #B8C1D9;
+}
+
+.stat-card h2 {
+  margin-top: 10px;
+  font-size: 30px;
+}
+
+/* CARD COLORS */
+.blue { background: linear-gradient(135deg, #0E2A47, #133B6F); }
+.red { background: linear-gradient(135deg, #3B1C3F, #5A1A25); }
+.orange { background: linear-gradient(135deg, #3A2A1A, #6B3E1E); }
+.green { background: linear-gradient(135deg, #123A2E, #1E6F5C); }
+
+/* CONTENT */
+.content {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 24px;
+}
+
+/* TABLE */
+.table-box {
+  background: #0E1F3F;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.sub {
+  font-size: 13px;
+  color: #8A93B2;
+  margin-bottom: 16px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+th {
+  color: #ffffff;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+td {
+  color: #B8C1D9;
+}
+
+.high { color: #E74C5B; }
+.medium { color: #F1C40F; }
+.low { color: #2ECC71; }
+
+/* ALERTS */
+.alerts {
+  background: #0E1F3F;
+  padding: 24px;
+  border-radius: 16px;
+}
+
+.alert {
+  background: #2A1633;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 14px;
+}
+
+.alert span {
+  display: block;
+  font-size: 12px;
+  color: #B8C1D9;
+  margin-top: 6px;
+}
+
+.alert.high {
+  border-left: 4px solid #E74C5B;
+}
+
+.alert.medium {
+  border-left: 4px solid #F1C40F;
+}
