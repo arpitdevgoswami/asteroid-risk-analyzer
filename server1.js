@@ -3,10 +3,12 @@ const axios = require('axios');
 const path = require('path');
 const cors = require('cors');
 const db = require('./db');
+require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
-const NASA_API_KEY = 'dA7AirbtYyrUyiW1sxLTIrw7qfj5meQhef73MtQ9';
+const NASA_API_KEY = process.env.NASA_API_KEY || 'Z4uVwY8SX6zGguf9ebgvKxQhEzXNUuc9YxqUvNdr';
+const AUTH_SERVER = process.env.AUTH_URL || 'http://localhost:4000';
 
 // Middleware
 app.use(cors());
@@ -14,36 +16,57 @@ app.use(express.json());
 
 // Lightweight proxy for auth API so the frontend can call same-origin /api/auth/*
 app.use('/api/auth', async (req, res) => {
-    // Map health check to auth server's /api/health endpoint
-    let target = `http://localhost:4000${req.originalUrl}`;
-    if (req.originalUrl && req.originalUrl.endsWith('/health')) {
-        target = 'http://localhost:4000/api/health';
+    // Add CORS headers
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    
+    // Handle preflight
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(200);
     }
+    
+    // Forward /api/auth/* to the authentication server
+    const isHealth = req.originalUrl && req.originalUrl.endsWith('/health');
+    const targetUrl = isHealth ? `${AUTH_SERVER}/api/health` : `${AUTH_SERVER}${req.originalUrl}`;
     try {
+        // Clean headers - only forward content-type and authorization
+        const forwardHeaders = {};
+        if (req.headers['content-type']) {
+            forwardHeaders['content-type'] = req.headers['content-type'];
+        }
+        if (req.headers['authorization']) {
+            forwardHeaders['authorization'] = req.headers['authorization'];
+        }
+
         const axiosConfig = {
             method: req.method,
-            url: target,
-            headers: Object.assign({}, req.headers, { host: 'localhost:4000' }),
-            data: req.body,
+            url: targetUrl,
+            headers: forwardHeaders,
+            data: req.method === 'POST' || req.method === 'PUT' ? req.body : undefined,
             params: req.query,
-            timeout: 15000,
-            validateStatus: () => true,
-            responseType: 'arraybuffer'
+            timeout: 30000,
+            validateStatus: () => true
         };
 
+        console.log('Proxying auth request ->', axiosConfig.method, axiosConfig.url);
         const response = await axios(axiosConfig);
 
         // Forward response headers (skip hop-by-hop headers)
-        const skip = ['transfer-encoding', 'connection', 'keep-alive', 'content-encoding'];
+        const skip = ['transfer-encoding', 'connection', 'keep-alive', 'content-encoding', 'host', 'content-length'];
         for (const k of Object.keys(response.headers || {})) {
             if (skip.includes(k.toLowerCase())) continue;
             res.setHeader(k, response.headers[k]);
         }
 
-        res.status(response.status).send(Buffer.from(response.data));
+        res.status(response.status).json(response.data);
     } catch (err) {
-        console.error('Auth proxy error:', err.message || err);
-        res.status(502).json({ error: 'Auth server unreachable (proxy)' });
+        console.error('Auth proxy error:', err && err.message ? err.message : err);
+        res.status(502).json({ 
+            error: 'Authentication server unavailable',
+            message: 'Please ensure the authentication server is running',
+            details: err && err.message ? err.message : 'Network error'
+        });
     }
 });
 
@@ -92,7 +115,7 @@ app.get('/api/asteroids', async (req, res) => {
         const data = response.data;
 
         const asteroidList = data.near_earth_objects[today] || [];
-        
+
         // Process and store in database
         const formattedData = asteroidList.map(neo => ({
             name: neo.name,
@@ -117,7 +140,7 @@ app.get('/api/asteroids', async (req, res) => {
 
     } catch (error) {
         console.error('❌ Error fetching asteroid data:', error.message);
-        
+
         // As last resort, try to get any available data from database
         try {
             const fallbackData = db.getAllAsteroids();
@@ -230,14 +253,14 @@ app.post('/api/refresh', async (req, res) => {
     try {
         const today = new Date().toISOString().split('T')[0];
         const cacheKey = `asteroids_${today}`;
-        
+
         const url = `https://api.nasa.gov/neo/rest/v1/feed?start_date=${today}&end_date=${today}&api_key=${NASA_API_KEY}`;
         console.log('🔄 Refreshing data from NASA API...');
-        
+
         const response = await axios.get(url);
         const data = response.data;
         const asteroidList = data.near_earth_objects[today] || [];
-        
+
         const formattedData = asteroidList.map(neo => ({
             name: neo.name,
             velocity: parseFloat(neo.close_approach_data[0].relative_velocity.kilometers_per_second).toFixed(1),
@@ -265,8 +288,8 @@ app.post('/api/refresh', async (req, res) => {
 // Health Check
 app.get('/api/health', (req, res) => {
     const stats = db.getStats();
-    res.json({ 
-        status: 'OK', 
+    res.json({
+        status: 'OK',
         server: 'Asteroid Risk Analyzer with Database',
         timestamp: new Date().toISOString(),
         database: stats

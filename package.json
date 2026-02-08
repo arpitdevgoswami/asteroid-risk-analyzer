@@ -5,9 +5,11 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server1.js",
+    "start": "node server.js",
     "start:auth": "node server.js",
     "start:api": "node server1.js",
+    "start:render": "node start-render.js",
+    "start:both": "node scripts/dev.js",
     "seed": "node scripts/seed.js",
     "dev": "node scripts/dev.js"
   },

@@ -28,6 +28,7 @@
           <a href="#">Forget Password?</a>
         </div>
         <button type="submit" class="btn" id="loginBtn">Login</button>
+        <button type="button" class="btn" id="demoBtn" style="background:linear-gradient(135deg, #90EE90, #76C876); margin-top: 10px; width: 100%;">Try Demo Mode</button>
         <p>or login with social platforms</p>
         <div class="social-icons">
           <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
@@ -49,30 +50,24 @@
   </div>
 
   <script>
-    // Resolve auth server base: prefer same-origin proxy at /api/auth, then try known ports
-    async function resolveAuthApi(){
-      if(window._AUTH_BASE) return window._AUTH_BASE;
-      // try same-origin proxy endpoint first
-      try{
-        const res = await fetch(`/api/auth/health`, { method: 'GET', mode: 'cors' });
-        if(res.ok){ window._AUTH_BASE = ''; return ''; }
-      }catch(e){ /* ignore */ }
-
-      const ports = [4000,4001,5000];
-      for(const p of ports){
-        const url = `${window.location.protocol}//${window.location.hostname}:${p}`;
-        try{
-          const res = await fetch(`${url}/api/health`, { method: 'GET', mode: 'cors' });
-          if(res.ok){ window._AUTH_BASE = url; return url; }
-        }catch(e){ /* ignore */ }
-      }
-      window._AUTH_BASE = `${window.location.protocol}//${window.location.hostname}:4000`;
-      return window._AUTH_BASE;
-    }
+    // Use same-origin proxy endpoint for auth API
+    const AUTH_API_BASE = '/api/auth';
 
     const loginForm = document.getElementById('loginForm');
     const loginBtn = document.getElementById('loginBtn');
+    const demoBtn = document.getElementById('demoBtn');
     const loginError = document.getElementById('loginError');
+
+    // Demo mode button
+    if (demoBtn) {
+      demoBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        localStorage.setItem('demoMode', 'true');
+        localStorage.setItem('authToken', 'demo-token');
+        localStorage.setItem('user', JSON.stringify({ username: 'Demo User', email: 'demo@example.com' }));
+        window.location.href = '/dashboard.html';
+      });
+    }
 
     if (loginForm) {
       loginForm.addEventListener('submit', async (e) => {
@@ -93,10 +88,8 @@
           loginBtn.disabled = true;
           loginBtn.textContent = 'Logging in...';
 
-          const API_URL = await resolveAuthApi();
-          const response = await fetch(`${API_URL}/api/auth/login`, {
+          const response = await fetch(`${AUTH_API_BASE}/login`, {
             method: 'POST',
-            mode: 'cors',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
             credentials: 'include'
@@ -119,12 +112,13 @@
           // Store token
           localStorage.setItem('authToken', data.token);
           localStorage.setItem('user', JSON.stringify(data.user));
+          localStorage.removeItem('demoMode');
 
           // Redirect to dashboard
           window.location.href = '/dashboard.html';
         } catch (err) {
           console.error('Login error:', err);
-          loginError.textContent = err.message || 'Network error. Please check your connection.';
+          loginError.textContent = 'Failed to connect to server. Please check your internet connection and ensure the authentication server is running.';
           loginError.style.display = 'block';
           loginBtn.disabled = false;
           loginBtn.textContent = 'Login';

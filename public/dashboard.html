@@ -261,71 +261,73 @@
 
   // Authentication and User Data
   (async function(){
-    // Resolve auth server base by trying common auth ports on this host
-    async function resolveAuthApi(){
-      if(window._AUTH_BASE) return window._AUTH_BASE;
-      const ports = [4000,4001,5000];
-      for(const p of ports){
-        const url = `${window.location.protocol}//${window.location.hostname}:${p}`;
-        try{
-          const res = await fetch(`${url}/api/health`, { method: 'GET', mode: 'cors' });
-          if(res.ok){ window._AUTH_BASE = url; return url; }
-        }catch(e){ /* ignore */ }
-      }
-      window._AUTH_BASE = `${window.location.protocol}//${window.location.hostname}:4000`;
-      return window._AUTH_BASE;
-    }
-
-    const API_URL = await resolveAuthApi();
+    // Use same-origin proxy endpoint for auth API
+    const AUTH_API_BASE = '/api/auth';
     const token = localStorage.getItem('authToken');
     const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-    // Redirect to login if not authenticated
-    if(!token){
+    // Allow demo/guest mode if explicitly enabled
+    const demoMode = localStorage.getItem('demoMode') === 'true';
+    
+    // Redirect to login if not authenticated and not in demo mode
+    if(!token && !demoMode){
       window.location.href = '/index.html';
       return;
     }
 
     try {
-      // Fetch current user data
-      const response = await fetch(`${API_URL}/api/user/me`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      // Only fetch user data if we have a token
+      if (token) {
+        // Fetch current user data
+        const response = await fetch(`${AUTH_API_BASE}/user/me`, {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
 
-      if(!response.ok){
-        if(response.status === 401){
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('user');
-          window.location.href = '/index.html';
+        if(!response.ok){
+          if(response.status === 401){
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('user');
+            window.location.href = '/index.html';
+          }
+          throw new Error('Failed to fetch user data');
         }
-        throw new Error('Failed to fetch user data');
-      }
 
-      const userData = await response.json();
+        const userData = await response.json();
 
-      // Update sidebar with user data
-      document.getElementById('sidebarName').textContent = userData.username || 'Guest';
-      document.getElementById('sidebarEmail').textContent = userData.email || 'user@example.com';
+        // Update sidebar with user data
+        document.getElementById('sidebarName').textContent = userData.username || 'Guest';
+        document.getElementById('sidebarEmail').textContent = userData.email || 'user@example.com';
 
-      // Display watched asteroids count
-      const watchedCount = (userData.watchedAsteroids || []).length;
-      console.log(`User has ${watchedCount} watched asteroids`);
+        // Display watched asteroids count
+        const watchedCount = (userData.watchedAsteroids || []).length;
+        console.log(`User has ${watchedCount} watched asteroids`);
 
-      // Optional: Update avatar if available
-      if(userData.avatarUrl && userData.avatarUrl !== '/uploads/default-avatar.png'){
-        const avatarEl = document.getElementById('sidebarAvatar');
-        avatarEl.textContent = '';
-        const img = document.createElement('img');
-        img.src = userData.avatarUrl;
-        img.style.width = '100%';
-        img.style.height = '100%';
-        img.style.borderRadius = '50%';
-        img.style.objectFit = 'cover';
-        avatarEl.appendChild(img);
+        // Optional: Update avatar if available
+        if(userData.avatarUrl && userData.avatarUrl !== '/uploads/default-avatar.png'){
+          const avatarEl = document.getElementById('sidebarAvatar');
+          avatarEl.textContent = '';
+          const img = document.createElement('img');
+          img.src = userData.avatarUrl;
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.borderRadius = '50%';
+          img.style.objectFit = 'cover';
+          avatarEl.appendChild(img);
+        }
+      } else if (demoMode) {
+        // Set demo user data
+        document.getElementById('sidebarName').textContent = 'Demo User';
+        document.getElementById('sidebarEmail').textContent = 'demo@example.com';
+        console.log('Running in demo mode');
       }
     } catch(err){
       console.error('Error fetching user data:', err);
+      // In case of error, still show demo data (graceful degradation)
+      if (demoMode || !token) {
+        document.getElementById('sidebarName').textContent = 'Guest User';
+        document.getElementById('sidebarEmail').textContent = 'guest@example.com';
+      }
     }
 
     // Fetch and render asteroid data from the data server (same origin)

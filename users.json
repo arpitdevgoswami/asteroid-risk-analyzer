@@ -64,5 +64,35 @@
     "avatarUrl": "/uploads/default-avatar.png",
     "watchedAsteroids": [],
     "alerts": []
+  },
+  "8546cecb-961f-4bdd-9f1c-f4367f147452": {
+    "id": "8546cecb-961f-4bdd-9f1c-f4367f147452",
+    "username": "katyayani",
+    "email": "katyayanipradhan2@gmail.com",
+    "password": "8a084bfd0231b583b82bdab181d0baa3873ec1689cf38d5e8b8d3b5976481fc0",
+    "createdAt": "2026-02-08T04:11:41.747Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "d5cc5851-9b98-417e-b017-f7dffd170be7": {
+    "id": "d5cc5851-9b98-417e-b017-f7dffd170be7",
+    "username": "demo",
+    "email": "demo@cosmic.com",
+    "password": "4666e34c09d30f2207668cbeaea81694e28b4dcc3d1af8cbefef5e6c6df2ba30",
+    "createdAt": "2026-02-08T04:40:14.421Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "4e0635ab-cd99-45da-bf17-9452e81ff3aa": {
+    "id": "4e0635ab-cd99-45da-bf17-9452e81ff3aa",
+    "username": "arpit_dev",
+    "email": "arpitdev018@gmail.com",
+    "password": "80cd4744d0bb5c249163dcad24f6b9e7b17fc2eeca8481eb43f4c78927d8298d",
+    "createdAt": "2026-02-08T04:43:54.248Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
   }
 }

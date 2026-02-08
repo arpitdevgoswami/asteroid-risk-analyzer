@@ -243,27 +243,8 @@
   </div>
 
   <script>
-    // Resolve auth server base: prefer same-origin proxy at /api/auth, then try known ports
-    async function resolveAuthApi(){
-      if(window._AUTH_BASE) return window._AUTH_BASE;
-      // try same-origin proxy endpoint first
-      try{
-        const res = await fetch(`/api/auth/health`, { method: 'GET', mode: 'cors' });
-        if(res.ok){ window._AUTH_BASE = ''; return ''; }
-      }catch(e){ /* ignore */ }
-
-      const ports = [4000, 4001, 5000];
-      for(const p of ports){
-        const url = `${window.location.protocol}//${window.location.hostname}:${p}`;
-        try{
-          const res = await fetch(`${url}/api/health`, { method: 'GET', mode: 'cors' });
-          if(res.ok){ window._AUTH_BASE = url; return url; }
-        }catch(e){ /* ignore */ }
-      }
-      // fallback to hostname:4000
-      window._AUTH_BASE = `${window.location.protocol}//${window.location.hostname}:4000`;
-      return window._AUTH_BASE;
-    }
+    // Use same-origin proxy endpoint for auth API
+    const AUTH_API_BASE = '/api/auth';
 
     const signupForm = document.getElementById('signupForm');
     const signupBtn = document.getElementById('signupBtn');
@@ -302,8 +283,7 @@
           signupBtn.disabled = true;
           signupBtn.textContent = 'Creating Account...';
 
-          const API_URL = await resolveAuthApi();
-          const response = await fetch(`${API_URL}/api/auth/signup`, {
+          const response = await fetch(`${AUTH_API_BASE}/signup`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, email, password, confirmPassword })
@@ -328,7 +308,7 @@
           window.location.href = '/dashboard.html';
         } catch (err) {
           console.error(err);
-          signupError.textContent = err.message || 'Network error';
+          signupError.textContent = 'Failed to connect to server. Please check your internet connection and ensure the authentication server is running.';
           signupError.style.display = 'block';
           signupBtn.disabled = false;
           signupBtn.textContent = 'Create Account';

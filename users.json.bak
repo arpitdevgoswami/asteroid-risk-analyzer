@@ -54,5 +54,35 @@
     "avatarUrl": "/uploads/default-avatar.png",
     "watchedAsteroids": [],
     "alerts": []
+  },
+  "ad866a28-d6ac-4737-920f-f9f05acec704": {
+    "id": "ad866a28-d6ac-4737-920f-f9f05acec704",
+    "username": "proxy_test_user",
+    "email": "proxy_test@example.com",
+    "password": "edf9a2b715bb3d52e30f4ec5d74d258d5fe7277d72c703c7622effa92543c734",
+    "createdAt": "2026-02-07T22:55:14.457Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "8546cecb-961f-4bdd-9f1c-f4367f147452": {
+    "id": "8546cecb-961f-4bdd-9f1c-f4367f147452",
+    "username": "katyayani",
+    "email": "katyayanipradhan2@gmail.com",
+    "password": "8a084bfd0231b583b82bdab181d0baa3873ec1689cf38d5e8b8d3b5976481fc0",
+    "createdAt": "2026-02-08T04:11:41.747Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
+  },
+  "d5cc5851-9b98-417e-b017-f7dffd170be7": {
+    "id": "d5cc5851-9b98-417e-b017-f7dffd170be7",
+    "username": "demo",
+    "email": "demo@cosmic.com",
+    "password": "4666e34c09d30f2207668cbeaea81694e28b4dcc3d1af8cbefef5e6c6df2ba30",
+    "createdAt": "2026-02-08T04:40:14.421Z",
+    "avatarUrl": "/uploads/default-avatar.png",
+    "watchedAsteroids": [],
+    "alerts": []
   }
 }
